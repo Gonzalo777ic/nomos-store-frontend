@@ -1,12 +1,9 @@
-import http from "./http";
-import type { User, AuthResponse, Credentials, RegisterInput } from "@/types";
+// Eliminamos las importaciones de tipos de autenticación local ya obsoletas.
+// import type { User, AuthResponse, Credentials, RegisterInput } from "@/types";
+// Mantenemos http si lo necesita para otras funciones de usuario que no sean login/register.
 
-export async function loginApi(data: Credentials): Promise<AuthResponse> {
-  const res = await http.post<AuthResponse>("/auth/login", data);
-  return res.data;
-}
+// Las funciones de login y registro son manejadas por Auth0 y su SDK.
+// Las funciones locales de login y register han sido eliminadas.
 
-export async function registerApi(data: RegisterInput): Promise<User> {
-  const res = await http.post<User>("/auth/register", data);
-  return res.data;
-}
+// Puedes mantener esta estructura para futuras llamadas relacionadas con el usuario si son necesarias,
+// pero por ahora, está vacío de lógica de autenticación.

@@ -1,36 +1,54 @@
-import { useAuthStore } from "@/store/auth";
-import { validateEmail } from "@/utils/format";
-import { useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+// Se asume que useAuthStore y el login local ya no se usan en este archivo.
 
 export default function Login() {
-  const login = useAuthStore((s) => s.login);
+  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateEmail(email)) return alert("Email inválido");
-    await login(email, password);
-    navigate("/");
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+
+  const handleLogin = () => {
+    // Inicia el flujo de Auth0 (redirección al dominio de Auth0)
+    loginWithRedirect();
   };
+
+  if (isLoading) {
+    return (
+      <main className="container mx-auto max-w-md px-4 py-10">
+        <div className="flex justify-center items-center h-40">
+          <p className="text-gray-500 font-medium">Cargando la configuración de autenticación...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="container mx-auto max-w-md px-4 py-10">
       <h1 className="mb-6 text-2xl font-bold">Iniciar sesión</h1>
-      <form onSubmit={onSubmit} className="space-y-4 rounded-md border bg-white p-6">
-        <div className="grid gap-2">
-          <label className="text-sm">Email</label>
-          <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} required className="rounded-md border px-4 py-2" />
-        </div>
-        <div className="grid gap-2">
-          <label className="text-sm">Contraseña</label>
-          <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} required className="rounded-md border px-4 py-2" />
-        </div>
-        <button type="submit" className="w-full rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-brand/90">Entrar</button>
-        <p className="text-center text-sm text-gray-600">¿No tienes cuenta? <Link to="/register" className="text-brand hover:underline">Regístrate</Link></p>
-      </form>
+      <div className="space-y-4 rounded-md border bg-white p-6">
+        <p className="text-center text-gray-700">Utiliza tu cuenta de Nomos para continuar.</p>
+        <button
+          onClick={handleLogin}
+          type="button"
+          className="w-full rounded-md bg-indigo-600 px-4 py-3 font-medium text-white hover:bg-indigo-700 transition duration-150 shadow-md"
+        >
+          Iniciar Sesión con Auth0
+        </button>
+        <p className="text-center text-sm text-gray-600">
+          ¿No tienes cuenta?{" "}
+          <Link to="/register" className="text-indigo-600 hover:underline">
+            Regístrate
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }

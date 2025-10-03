@@ -1,13 +1,13 @@
-import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { defineConfig, Plugin } from "vite";
 import { createServer } from "./server";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 8081,
     fs: {
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
@@ -22,6 +22,20 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
+  },
+
+  // ✅ CONFIGURACIÓN DE VITEST AÑADIDA
+  test: {
+    // Esto inyecta las variables globales de prueba (describe, test, expect, vi)
+    globals: true,
+    // Define el entorno de simulación del navegador para pruebas de componentes React
+    environment: 'jsdom',
+    // Carga el archivo de setup (donde tienes '@testing-library/jest-dom')
+    setupFiles: [
+      './client/test/setup.ts',
+    ],
+    // Asegura que Vitest encuentre tus archivos de prueba
+    include: ['client/**/*.test.tsx', 'client/**/*.spec.ts'],
   },
 }));
 

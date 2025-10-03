@@ -1,5 +1,5 @@
-import http from "./http";
-import type { Product, PaginatedResponse } from "@/types";
+import type { PaginatedResponse, Product } from "@/types";
+import { http } from "./http";
 
 export async function getProducts(params?: {
   page?: number;

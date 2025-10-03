@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
 import path from "path";
+import { defineConfig } from "vite";
 
 // Server build configuration
 export default defineConfig({
@@ -50,4 +50,14 @@ export default defineConfig({
   define: {
     "process.env.NODE_ENV": '"production"',
   },
+  test: {
+    // ✅ Habilitar las APIs globales (describe, test, expect, etc.)
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: [
+      // ✅ Esto asegurará que jest-dom se cargue correctamente
+      './client/test/setup.ts',
+    ],
+    // ...
+  }
 });

@@ -1,44 +1,21 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { User } from "@/types";
-import { loginApi, registerApi } from "@/api/auth";
+// Ya no usamos `persist` ni dependemos de `loginApi` o `registerApi`.
+// El estado de autenticación (token, user) es manejado por Auth0.
 
+// Definición de tipos simplificada para el estado de "listo".
 interface AuthState {
-  user: User | null;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: () => boolean;
+  // isAuthReady indica si el SDK de Auth0 ha terminado de cargar el estado inicial.
+  isAuthReady: boolean;
+  setIsAuthReady: (ready: boolean) => void;
 }
 
+// Creamos un store simple para manejar el estado de carga inicial
+// (útil para ProtectedRoute o LoadingScreen).
 export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      token: null,
-      async login(email, password) {
-        try {
-          const res = await loginApi({ email, password });
-          set({ user: res.user, token: res.token });
-        } catch (e) {
-          // Fallback for demo when API isn't available
-          set({ user: { id: "local", name: email.split("@")[0], email }, token: "local-token" });
-        }
-      },
-      async register(name, email, password) {
-        try {
-          const user = await registerApi({ name, email, password });
-          set({ user, token: "registered-token" });
-        } catch (e) {
-          set({ user: { id: "local", name, email }, token: "local-token" });
-        }
-      },
-      logout() {
-        set({ user: null, token: null });
-      },
-      isAuthenticated: () => Boolean(get().token),
-    }),
-    { name: "nomos-auth" },
-  ),
+    (set) => ({
+      isAuthReady: false,
+      setIsAuthReady: (ready) => set({ isAuthReady: ready }),
+    })
 );
+
+// Nota: Eliminamos `persist` porque el estado de Auth0 no debe guardarse en Zustand.

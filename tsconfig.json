@@ -5,6 +5,12 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": [
+      "vitest/globals", // <-- ✅ ¡AÑADE O ASEGURA ESTA LÍNEA!
+      "vite/client",
+      // ... otros tipos, si los hay (ej. "jest" si tu setup todavía lo necesita)
+    ],
+
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -1,14 +1,26 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { ShoppingCart, LogIn, LogOut, PackageSearch } from "lucide-react";
-import { useCartStore } from "@/store/cart";
-import { useAuthStore } from "@/store/auth";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { useCartStore } from "@/store/cart";
+import { LogIn, LogOut, PackageSearch, ShoppingCart, User } from "lucide-react"; // Importar User
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const totalItems = useCartStore((s) => s.totalItems());
-  const isAuthed = useAuthStore((s) => s.isAuthenticated());
-  const logout = useAuthStore((s) => s.logout);
+
+  // ✅ Desestructuramos user
+  const { isAuthenticated: isAuthed, logout, user } = useAuth();
+
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  // Obtiene el nombre a mostrar
+  const userName = user?.name || user?.nickname || 'Cliente';
+  // Mostrar solo el primer nombre para no ocupar mucho espacio
+  const firstName = userName.split(' ')[0];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -25,10 +37,18 @@ export default function Navbar() {
           )}
         </nav>
         <div className="flex items-center gap-2">
+          {isAuthed && (
+            // ✅ Mostrar el nombre del usuario
+            <span className="flex items-center text-sm font-medium text-gray-700 mr-2">
+                <User className="h-4 w-4 mr-1 text-brand" />
+                Hola, {firstName}
+            </span>
+          )}
+
           {!isAuthed ? (
             <Button variant="ghost" size="sm" onClick={()=>navigate('/login')} className="text-gray-700"><LogIn className="mr-2"/>Entrar</Button>
           ) : (
-            <Button variant="ghost" size="sm" onClick={logout} className="text-gray-700"><LogOut className="mr-2"/>Salir</Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-gray-700"><LogOut className="mr-2"/>Salir</Button>
           )}
           <Button asChild variant="default" size="sm" className="relative bg-brand hover:bg-brand/90">
             <Link to="/cart" aria-label="Carrito">
