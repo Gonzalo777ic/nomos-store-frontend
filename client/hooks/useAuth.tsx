@@ -28,7 +28,7 @@ export const useAuth = () => {
   /**
    * Función estable para obtener y loguear el token.
    */
-  const getAuthToken = useCallback(async (): Promise<string | undefined> => {
+const getAuthToken = useCallback(async (): Promise<string | undefined> => {
     if (!isAuthenticated) return undefined;
 
     try {
@@ -46,16 +46,23 @@ export const useAuth = () => {
 
       try {
           const payload = token.split('.')[1];
-          const decodedPayload = JSON.parse(atob(payload));
-
-          const roleClaim = "https://nomos.inventory.api/roles";
+          // La función atob() no maneja caracteres especiales de URL, 
+          // es mejor usar un enfoque que maneje la codificación base64url.
+          // Para simpleza, reemplazamos caracteres comunes de URL antes de decodificar:
+          const base64 = payload.replace(/-/g, '+').replace(/_/g, '/'); 
+          
+          const decodedPayload = JSON.parse(atob(base64)); 
+          
+          // 🛑 CAMBIO CLAVE AQUÍ: Usa el claim exacto que pusiste en la Action.
+          const roleClaim = "https://nomosstore.com/roles"; 
           const roles = decodedPayload[roleClaim];
 
           console.log(`👤 Usuario: ${user?.name || user?.nickname || 'N/A'}`);
           console.log(`🆔 Sub (UserID): ${user?.sub}`);
 
           if (roles && roles.length > 0) {
-              console.log(`✅ Roles (Claim '${roleClaim}'):`, roles);
+              // Ahora debería mostrar el rol correctamente
+              console.log(`✅ Roles (Claim '${roleClaim}'):`, roles); 
           } else {
               console.warn(`❌ Rol no encontrado. Verifica tu Auth0 Action.`);
           }
@@ -71,7 +78,8 @@ export const useAuth = () => {
       console.error("Error al obtener el token de Auth0:", error);
       return undefined;
     }
-  }, [isAuthenticated, getAccessTokenSilently, user]); // Dependencias correctas
+  }, [isAuthenticated, getAccessTokenSilently, user]); 
+
 
 
   // 1. Inicialización de Auth Ready (para evitar renderizados intermedios)
