@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useAuthStore } from "../store/auth";
 
 /**
@@ -16,6 +16,9 @@ export const useAuth = () => {
   } = useAuth0();
 
   const { setIsAuthReady } = useAuthStore();
+
+  const isSyncedRef = useRef(false); 
+
 
   const logout = () => {
     auth0Logout({
@@ -79,6 +82,47 @@ const getAuthToken = useCallback(async (): Promise<string | undefined> => {
       return undefined;
     }
   }, [isAuthenticated, getAccessTokenSilently, user]); 
+  
+  useEffect(() => {
+        if (isAuthenticated && user && !isLoading && !isSyncedRef.current) {
+            
+            // Función para llamar al backend localmente
+            const syncUserToBackend = async () => {
+                const userData = {
+                    auth0Id: user.sub, 
+                    email: user.email, 
+                    name: user.name // Auth0UserRequest tiene este campo.
+                };
+
+                try {
+                    console.log("🚀 Sincronizando usuario a backend local...");
+                    const response = await fetch('http://localhost:8080/api/auth/auth0-upsert', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error('❌ Sync failed. Response:', response.status, errorBody);
+                        throw new Error('Sincronización fallida al backend local.');
+                    }
+                    console.log('✅ Usuario sincronizado con éxito vía frontend.');
+                    
+                    // 🛑 Marcar como sincronizado para evitar llamadas repetidas
+                    isSyncedRef.current = true; 
+
+                } catch (error) {
+                    console.error('❌ Error al llamar al backend de sincronización:', error);
+                }
+            };
+            
+            // Ejecutar la función de logging del token y luego la de sincronización
+            getAuthToken().then(() => syncUserToBackend());
+        }
+    }, [isAuthenticated, user, isLoading, getAuthToken]); 
 
 
 
