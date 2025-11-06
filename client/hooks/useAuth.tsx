@@ -93,18 +93,17 @@ const getAuthToken = useCallback(async (): Promise<AuthTokenResult | undefined> 
   }, [isAuthenticated, getAccessTokenSilently, user, getIdTokenClaims]); 
   
   
-  useEffect(() => {
-        if (isAuthenticated && user && !isLoading && !isSyncedRef.current) {
+useEffect(() => {
+        // 🛑 Eliminamos !isSyncedRef.current para que la sincronización se intente cada vez que 
+        // los claims cambian, o si el componente se desmonta y remonta.
+        if (isAuthenticated && user && !isLoading) {
             
             // Función para llamar al backend localmente
-            // 🛑 MODIFICAR PARA ACEPTAR ROLES
             const syncUserToBackend = async (roles: string[]) => { 
                 
-                // 🛑 CREAR EL OBJETO CON EL NUEVO CAMPO ROLES
                 const userData = {
                     auth0Id: user.sub, 
                     email: user.email, 
-                    // 🛑 AÑADIR EL CAMPO ROLES
                     roles: roles 
                 };
 
@@ -125,11 +124,12 @@ const getAuthToken = useCallback(async (): Promise<AuthTokenResult | undefined> 
                     }
                     console.log('✅ Usuario sincronizado con éxito vía frontend.');
                     
-                    // 🛑 Marcar como sincronizado para evitar llamadas repetidas
+                    // 🛑 Mantenemos isSyncedRef para evitar sincronización en cada re-render
                     isSyncedRef.current = true; 
 
                 } catch (error) {
                     console.error('❌ Error al llamar al backend de sincronización:', error);
+                    isSyncedRef.current = false; // Permite un nuevo intento
                 }
             };
             
@@ -141,7 +141,15 @@ const getAuthToken = useCallback(async (): Promise<AuthTokenResult | undefined> 
                 }
             });
         }
-    }, [isAuthenticated, user, isLoading, getAuthToken]); 
+        
+        // 🏆 NUEVA LÓGICA DE LIMPIEZA
+        // Esto garantiza que si el usuario se desautentica, el flag se limpia
+        if (!isAuthenticated && !isLoading) {
+            isSyncedRef.current = false;
+        }
+
+    // Aseguramos que isSyncedRef se limpie al desautenticar, usando el cleanup
+    }, [isAuthenticated, user, isLoading, getAuthToken]);
 
 
 // ... (resto de los useEffects) ...
