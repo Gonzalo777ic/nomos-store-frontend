@@ -1,13 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// Se asume que useAuthStore y el login local ya no se usan en este archivo.
+
 
 export default function Login() {
   const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
-  // Redirigir si ya está autenticado
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/", { replace: true });
@@ -16,7 +16,7 @@ export default function Login() {
 
 
   const handleLogin = () => {
-    // Inicia el flujo de Auth0 (redirección al dominio de Auth0)
+
     loginWithRedirect();
   };
 

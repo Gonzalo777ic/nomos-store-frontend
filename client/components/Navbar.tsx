@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCartStore } from "@/store/cart";
-import { LogIn, LogOut, PackageSearch, ShoppingCart, User } from "lucide-react"; // Importar User
+import { LogIn, LogOut, PackageSearch, ShoppingCart, User } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const totalItems = useCartStore((s) => s.totalItems());
 
-  // ✅ Desestructuramos user
+
   const { isAuthenticated: isAuthed, logout, user } = useAuth();
 
   const navigate = useNavigate();
@@ -17,9 +17,9 @@ export default function Navbar() {
     navigate("/");
   };
 
-  // Obtiene el nombre a mostrar
+
   const userName = user?.name || user?.nickname || 'Cliente';
-  // Mostrar solo el primer nombre para no ocupar mucho espacio
+
   const firstName = userName.split(' ')[0];
 
   return (
@@ -38,7 +38,7 @@ export default function Navbar() {
         </nav>
         <div className="flex items-center gap-2">
           {isAuthed && (
-            // ✅ Mostrar el nombre del usuario
+
             <span className="flex items-center text-sm font-medium text-gray-700 mr-2">
                 <User className="h-4 w-4 mr-1 text-brand" />
                 Hola, {firstName}

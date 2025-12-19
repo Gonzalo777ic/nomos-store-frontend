@@ -6,9 +6,9 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "types": [
-      "vitest/globals", // <-- ✅ ¡AÑADE O ASEGURA ESTA LÍNEA!
+      "vitest/globals",
       "vite/client",
-      // ... otros tipos, si los hay (ej. "jest" si tu setup todavía lo necesita)
+
     ],
 
 

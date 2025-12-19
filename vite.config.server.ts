@@ -1,7 +1,7 @@
 import path from "path";
 import { defineConfig } from "vite";
 
-// Server build configuration
+
 export default defineConfig({
   build: {
     lib: {
@@ -15,7 +15,7 @@ export default defineConfig({
     ssr: true,
     rollupOptions: {
       external: [
-        // Node.js built-ins
+
         "fs",
         "path",
         "url",
@@ -29,7 +29,7 @@ export default defineConfig({
         "buffer",
         "querystring",
         "child_process",
-        // External dependencies that should not be bundled
+
         "express",
         "cors",
       ],
@@ -38,7 +38,7 @@ export default defineConfig({
         entryFileNames: "[name].mjs",
       },
     },
-    minify: false, // Keep readable for debugging
+    minify: false,
     sourcemap: true,
   },
   resolve: {
@@ -51,13 +51,13 @@ export default defineConfig({
     "process.env.NODE_ENV": '"production"',
   },
   test: {
-    // ✅ Habilitar las APIs globales (describe, test, expect, etc.)
+
     globals: true,
     environment: 'jsdom',
     setupFiles: [
-      // ✅ Esto asegurará que jest-dom se cargue correctamente
+
       './client/test/setup.ts',
     ],
-    // ...
+
   }
 });

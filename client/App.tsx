@@ -3,7 +3,7 @@ import "./global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-// Importar Auth0Provider
+
 import { Auth0Provider } from '@auth0/auth0-react';
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -30,7 +30,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Renombramos la lógica de enrutamiento a AppContent
+
 const AppContent = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
@@ -51,12 +51,12 @@ const AppContent = () => (
   </QueryClientProvider>
 );
 
-// NUEVA FUNCIÓN APP para envolver y renderizar
+
 const App = () => {
-  // Configuración de Auth0
+
   const auth0Domain = "dev-663twfpev8syoqq5.us.auth0.com";
   const auth0ClientId = "UAn2A8nk0ZMwYrHt1JtvlXGRh7IBU8G5";
-  const auth0Audience = "https://nomos.inventory.api"; // Identificador de tu API Backend
+  const auth0Audience = "https://nomos.inventory.api";
 
   return (
     <Auth0Provider
@@ -66,7 +66,7 @@ const App = () => {
         redirect_uri: window.location.origin,
         audience: auth0Audience,
       }}
-      // ✅ Solución 1: Asegura la cache en localstorage.
+
       cacheLocation="localstorage"
     >
       <AppContent />
@@ -75,5 +75,5 @@ const App = () => {
 };
 
 
-// Llamada a render ahora usa el nuevo componente App
+
 createRoot(document.getElementById("root")!).render(<App />);

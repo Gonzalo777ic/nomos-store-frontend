@@ -3,7 +3,7 @@ import path from "path";
 import { defineConfig, Plugin } from "vite";
 import { createServer } from "./server";
 
-// https://vitejs.dev/config/
+
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -24,17 +24,17 @@ export default defineConfig(({ mode }) => ({
     },
   },
 
-  // ✅ CONFIGURACIÓN DE VITEST AÑADIDA
+
   test: {
-    // Esto inyecta las variables globales de prueba (describe, test, expect, vi)
+
     globals: true,
-    // Define el entorno de simulación del navegador para pruebas de componentes React
+
     environment: 'jsdom',
-    // Carga el archivo de setup (donde tienes '@testing-library/jest-dom')
+
     setupFiles: [
       './client/test/setup.ts',
     ],
-    // Asegura que Vitest encuentre tus archivos de prueba
+
     include: ['client/**/*.test.tsx', 'client/**/*.spec.ts'],
   },
 }));
@@ -42,11 +42,11 @@ export default defineConfig(({ mode }) => ({
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
+    apply: "serve",
     configureServer(server) {
       const app = createServer();
 
-      // Add Express app as middleware to Vite dev server
+
       server.middlewares.use(app);
     },
   };

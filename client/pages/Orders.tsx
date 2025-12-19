@@ -1,10 +1,10 @@
-// client/pages/Orders.tsx
-import { useOrdersApi } from "@/hooks/useOrdersApi"; // ✅ Importamos el nuevo hook
+
+import { useOrdersApi } from "@/hooks/useOrdersApi";
 import type { Order } from "@/types";
 import { formatPrice } from "@/utils/format";
-import { useQuery } from "@tanstack/react-query"; // ✅ Importamos useQuery
+import { useQuery } from "@tanstack/react-query";
 
-// Componente para un fallback simple de carga/error
+
 function OrderListFallback() {
   return (
     <li className="rounded-md border bg-white p-4 animate-pulse">
@@ -17,18 +17,18 @@ function OrderListFallback() {
 }
 
 export default function Orders() {
-  // 1. Obtenemos las funciones de la API autenticada
+
   const { getOrders } = useOrdersApi();
 
-  // 2. Usamos useQuery para manejar la carga de datos
+
   const { data: orders, isLoading, isError } = useQuery<Order[]>({
-    queryKey: ['orders'], // Clave única para el caché de pedidos
-    queryFn: getOrders,   // Función que llama a la API autenticada
-    // Añadimos un staleTime alto ya que los pedidos no cambian a menudo
-    staleTime: 5 * 60 * 1000, // 5 minutos
+    queryKey: ['orders'],
+    queryFn: getOrders,
+
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Manejo de estados de carga y error
+
   if (isLoading) {
     return (
       <main className="container mx-auto px-4 py-10">
@@ -51,7 +51,7 @@ export default function Orders() {
     );
   }
 
-  // Si no hay pedidos
+
   if (!orders || orders.length === 0) {
     return (
       <main className="container mx-auto px-4 py-10">
@@ -62,7 +62,7 @@ export default function Orders() {
   }
 
 
-  // Renderizado de pedidos
+
   return (
     <main className="container mx-auto px-4 py-10">
       <h1 className="mb-6 text-2xl font-bold">Mis pedidos</h1>
