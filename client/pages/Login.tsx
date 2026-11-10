@@ -34,7 +34,7 @@ export default function Login() {
     <main className="container mx-auto max-w-md px-4 py-10">
       <h1 className="mb-6 text-2xl font-bold">Iniciar sesión</h1>
       <div className="space-y-4 rounded-md border bg-white p-6">
-        <p className="text-center text-gray-700">Utiliza tu cuenta de Nomos para continuar.</p>
+        <p className="text-center text-gray-700">Utiliza tu cuenta para continuar.</p>
         <button
           onClick={handleLogin}
           type="button"

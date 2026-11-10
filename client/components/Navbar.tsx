@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-bold text-xl">
           <span className="inline-block h-6 w-6 rounded bg-brand" />
-          <span>Nomos <span className="text-brand">Store</span></span>
+          <span>ValeERP</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm">
           <NavLink to="/" className={({isActive})=> isActive?"text-brand font-semibold":"text-gray-600 hover:text-gray-900"}>Inicio</NavLink>

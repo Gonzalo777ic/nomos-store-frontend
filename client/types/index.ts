@@ -47,4 +47,6 @@ export interface AuthResponse { token: string; user: User }
 
 export interface CreateOrderInput {
   items: { productId: Product["id"]; quantity: number }[];
+  fullName: string;
+  address: string;
 }

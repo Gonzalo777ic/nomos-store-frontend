@@ -2,20 +2,40 @@ import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
 import { formatPrice } from "@/utils/format";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useOrdersApi } from "@/hooks/useOrdersApi";
 
 export default function Checkout() {
   const { items, clearCart, totalPrice } = useCartStore();
   const isAuthed = useAuthStore((s) => s.isAuthenticated());
   const navigate = useNavigate();
+  const { createOrder } = useOrdersApi();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [fullName, setFullName] = useState("");
+  const [address, setAddress] = useState("");
 
   if (!isAuthed()) {
     navigate("/login");
   }
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    clearCart();
-    navigate("/orders");
+    setSubmitting(true);
+    setError(null);
+    try {
+      await createOrder({
+        fullName,
+        address,
+        items: items.map(({ product, quantity }) => ({ productId: product.id, quantity })),
+      });
+      clearCart();
+      navigate("/orders");
+    } catch {
+      setError("No se pudo registrar el pedido. Revisa existencias y que exista la tasa de impuesto configurada.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -24,17 +44,17 @@ export default function Checkout() {
         <h1 className="text-2xl font-bold">Checkout</h1>
         <div className="grid gap-2">
           <label className="text-sm">Nombre completo</label>
-          <input required className="rounded-md border px-4 py-2" />
+          <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className="rounded-md border px-4 py-2" />
         </div>
         <div className="grid gap-2">
           <label className="text-sm">Dirección</label>
-          <input required className="rounded-md border px-4 py-2" />
+          <input required value={address} onChange={(e) => setAddress(e.target.value)} className="rounded-md border px-4 py-2" />
         </div>
-        <div className="grid gap-2">
-          <label className="text-sm">Tarjeta</label>
-          <input required className="rounded-md border px-4 py-2" placeholder="0000 0000 0000 0000" />
-        </div>
-        <button type="submit" className="w-full rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-brand/90">Confirmar pedido</button>
+        <p className="text-sm text-gray-600">El pedido queda al contado y descuenta existencias. El cobro con tarjeta no pasa por ValeERP.</p>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <button type="submit" disabled={submitting} className="w-full rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-brand/90">
+          {submitting ? "Registrando pedido..." : "Confirmar pedido"}
+        </button>
       </form>
       <aside className="h-max rounded-md border bg-white p-6">
         <h2 className="mb-3 font-semibold">Resumen</h2>

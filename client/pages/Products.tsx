@@ -7,6 +7,7 @@ import Loader from "@/components/Loader";
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 12;
@@ -14,15 +15,12 @@ export default function Products() {
   useEffect(() => {
     (async () => {
       try {
+        setFailed(false);
         const res = await getProducts({ page: page - 1, size: pageSize, search });
         setProducts(res.content);
       } catch {
-        setProducts([
-          { id: 1, name: "Camiseta Nomos Verde", price: 24.99, imageUrl: "/placeholder.svg", category: "Ropa" },
-          { id: 2, name: "Taza Nomos", price: 9.99, imageUrl: "/placeholder.svg", category: "Hogar" },
-          { id: 3, name: "Gorra Nomos", price: 14.99, imageUrl: "/placeholder.svg", category: "Accesorios" },
-          { id: 4, name: "Mochila Nomos", price: 49.99, imageUrl: "/placeholder.svg", category: "Accesorios" },
-        ]);
+        setFailed(true);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -49,6 +47,8 @@ export default function Products() {
 
       {loading ? (
         <Loader />
+      ) : failed ? (
+        <p className="text-sm text-red-600">No se pudo leer el catálogo.</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {filtered.map((p) => (
