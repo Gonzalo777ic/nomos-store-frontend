@@ -50,3 +50,11 @@ export interface CreateOrderInput {
   fullName: string;
   address: string;
 }
+
+export type {
+  CatalogPriceProjection,
+  OrderQuoteLineView,
+  OrderQuoteView,
+  QuoteOrderItemInput,
+  QuoteOrderRequest,
+} from "./orderQuote";

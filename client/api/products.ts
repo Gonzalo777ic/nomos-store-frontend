@@ -1,8 +1,9 @@
 import axios from "axios";
+import { requireViteEnv } from "@/api/env";
 import type { PaginatedResponse, Product } from "@/types";
 
 const catalog = axios.create({
-  baseURL: (import.meta as any).env?.VITE_CATALOG_API_URL || "http://localhost:8082/api/catalog",
+  baseURL: requireViteEnv("VITE_CATALOG_API_URL"),
 });
 
 export async function getProducts(params?: {

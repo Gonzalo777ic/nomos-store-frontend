@@ -1,3 +1,4 @@
+import { useCartQuote } from "@/hooks/useCartQuote";
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
 import { formatPrice } from "@/utils/format";
@@ -6,10 +7,11 @@ import { useState } from "react";
 import { useOrdersApi } from "@/hooks/useOrdersApi";
 
 export default function Checkout() {
-  const { items, clearCart, totalPrice } = useCartStore();
+  const { items, clearCart } = useCartStore();
   const isAuthed = useAuthStore((s) => s.isAuthenticated());
   const navigate = useNavigate();
   const { createOrder } = useOrdersApi();
+  const { data: quote, isLoading: quoteLoading, isError: quoteError } = useCartQuote(items);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
@@ -52,24 +54,30 @@ export default function Checkout() {
         </div>
         <p className="text-sm text-gray-600">El pedido queda al contado y descuenta existencias. El cobro con tarjeta no pasa por ValeERP.</p>
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button type="submit" disabled={submitting} className="w-full rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-brand/90">
+        <button type="submit" disabled={submitting || !quote} className="w-full rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-brand/90 disabled:opacity-50">
           {submitting ? "Registrando pedido..." : "Confirmar pedido"}
         </button>
       </form>
       <aside className="h-max rounded-md border bg-white p-6">
         <h2 className="mb-3 font-semibold">Resumen</h2>
-        <ul className="space-y-2 text-sm text-gray-700">
-          {items.map(({ product, quantity }) => (
-            <li key={product.id} className="flex items-center justify-between">
-              <span className="line-clamp-1">{product.name} × {quantity}</span>
-              <span>{formatPrice(product.price * quantity)}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 flex items-center justify-between border-t pt-3">
-          <span className="text-gray-600">Total</span>
-          <span className="text-lg font-semibold text-brand">{formatPrice(totalPrice())}</span>
-        </div>
+        {quoteLoading && <p className="text-sm text-gray-500">Calculando totales…</p>}
+        {quoteError && <p className="text-sm text-red-600">No se pudo obtener el total del pedido.</p>}
+        {quote && (
+          <>
+            <ul className="space-y-2 text-sm text-gray-700">
+              {quote.lines.map((line) => (
+                <li key={String(line.productId)} className="flex items-center justify-between">
+                  <span className="line-clamp-1">{line.productName} × {line.quantity}</span>
+                  <span>{formatPrice(line.subtotal, quote.currency)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex items-center justify-between border-t pt-3">
+              <span className="text-gray-600">Total</span>
+              <span className="text-lg font-semibold text-brand">{formatPrice(quote.total, quote.currency)}</span>
+            </div>
+          </>
+        )}
       </aside>
     </main>
   );
