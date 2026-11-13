@@ -15,9 +15,9 @@ describe('Accordion Components', () => {
   const TestAccordion = () => (
     <Accordion type="single" defaultValue="item-1" collapsible>
       <AccordionItem value="item-1" data-testid="item-1">
-        <AccordionTrigger>¿Qué es Nomos Store?</AccordionTrigger>
+        <AccordionTrigger>¿Qué es ValeERP?</AccordionTrigger>
         <AccordionContent data-testid="content-1">
-          Nomos Store es una tienda en línea de artículos electrónicos.
+          ValeERP es una tienda en línea de artículos electrónicos.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2" data-testid="item-2">

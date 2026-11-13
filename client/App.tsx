@@ -56,7 +56,7 @@ const App = () => {
 
   const auth0Domain = "dev-663twfpev8syoqq5.us.auth0.com";
   const auth0ClientId = "UAn2A8nk0ZMwYrHt1JtvlXGRh7IBU8G5";
-  const auth0Audience = "https://nomos.inventory.api";
+  const auth0Audience = "https://valeerp.inventory.api";
 
   return (
     <Auth0Provider
